@@ -1,6 +1,8 @@
 from rdflib import Graph
+import ontospy
 from rdflib import URIRef
 import nltk
+import rdflib
 from nltk.tag import pos_tag   
 import re
 import urllib.request
@@ -35,7 +37,21 @@ soup = BeautifulSoup(con.read())
  
 
 sentences = ie_preprocess(soup.getText())
+graph = rdflib.Graph()
 
+
+onto = ontospy.Ontospy("root-ontology.owl")
+#onto.printClassTree()
+l = set(onto.classes)
+
+a = []
+print("Anotações:")
 for sentence in sentences:
-    print(sentence)
-print("=============================================================")
+    for token in sentence:
+        for i in l:
+            s = str(i).partition('#')[-1].rpartition('*')[0].replace('_',' ')
+            if sentence[0] == s:
+                if s not in a:
+                    a.insert(len(a),s)
+                    print('<' + url + ',' + str(i) + ',' + token + '>')
+ 

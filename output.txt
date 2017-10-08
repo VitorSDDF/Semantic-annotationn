@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:ns3="http://annotation-ontology.googlecode.com/svn/trunk/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:ns1="http://smiy.sourceforge.net/ao/rdf/"
+  xmlns:ns2="http://cdn.rawgit.com/pav-ontology/pav/2.0/"
+>
+  <ns1:associationontology.owlAnnotation rdf:nodeID="N6fa8da28b45446cfa2be03b2fbc21d0a">
+    <rdfs:comment xml:lang="pt">Anotação semântica para textos jornalísticos</rdfs:comment>
+    <ns2:pav.owlcreatedB rdf:resource="http://organizacao.com/Vitor Silva"/>
+    <ns1:associationontology.owlhasTopic rdf:resource="http://www.semanticweb.org/cristiano/ontologies/2016/5/untitled-ontology-5#Microcefalia"/>
+    <ns3:annotation-foaf.owlannotatesDocument rdf:resource="http://portalsaude.saude.gov.br/index.php/o-ministerio/principal/secretarias/svs/zika"/>
+    <ns2:pav.owlcreatedOn rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2017-10-08T00:36:07.411400</ns2:pav.owlcreatedOn>
+  </ns1:associationontology.owlAnnotation>
+</rdf:RDF>

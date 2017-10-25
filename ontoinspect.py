@@ -20,6 +20,7 @@ import tempfile
 stop = stopwords.words('portuguese')
  
 url = 'http://portalsaude.saude.gov.br/index.php/o-ministerio/principal/secretarias/svs/zika'
+url2 = 'https://www.health.zone'
 text = "O zika é uma doença viral aguda, transmitida principalmente, pelos mosquitos Ae. Aegypti e Ae. albopictus, caracterizada por exantema maculopapular pruriginoso, febre intermitente, hiperemia conjuntival não purulenta e sem prurido, artralgia, mialgia e dor de cabeça. A maior parte dos casos apresentam evolução benigna e os sintomas geralmente desaparecem espontaneamente após 3-7 dias. No entanto, observa-se a ocorrência de óbitos pelo agravo, aumento dos casos de microcefalia e de manifestações neurológicas associadas à ocorrência da doença."
 text2 = "O vírus Zika é um flavivírus transmitido por mosquitos e foi, pela primeira vez, identificado em macacos, no Uganda, em 1947, através de uma rede que monitorizava a febre amarela. Foi mais tarde identificado em humanos, em 1952, no Uganda e na República Unida da Tanzânia. Foram registados surtos da doença do vírus Zika em África, nas Américas, na Ásia e no Pacífico. Entre os anos 1960 e os anos 1980, foram encontradas infecções humanas em África e na Ásia, normalmente acompanhadas de doença ligeira. O primeiro grande surto da doença causado pela infecção por Zika foi notificada na ilha de Yap (Estados Federados da Micronésia), em 2007. Em Julho de 2015, o Brasil notificou uma associação entre a infecção pelo vírus Zika e a síndrome de Guillain-Barré. Em Outubro de 2015, o Brasil notificou uma associação entre a infecção pelo vírus Zika e a microcefalia."
 
@@ -87,7 +88,8 @@ def print_graph(g):
     for s, p, o in g:
         print((s, p, o))
 
-def gen_article_annotations(text,concept_dict,base,author,description):
+def gen_article_annotations(basefile,doc_ref,text,concept_dict,base,author,presentation):
+    lang = 'pt'
     sentences = get_text_sentences(text)
     concepts_found = list()
     search_remaining_concepts = [nltk.word_tokenize(i) for i in concept_dict.keys()]
@@ -98,18 +100,17 @@ def gen_article_annotations(text,concept_dict,base,author,description):
     AOF = Namespace("http://annotation-ontology.googlecode.com/svn/trunk/annotation-foaf.owl")
 
     graph = Graph()
-    try:
-        g.parse("base.rdf", format="xml")
+    if os.path.isfile(basefile):
+        graph.parse(basefile, format="xml")
         d = Describer(graph,base = "http://organizacao.com")
-        d.value(RDFS.comment,presentation, lang=lang)
-    except:
+    else:
         print("Arquivo de anotações não encontrado ou ilegível.Outro será criado")
         d = Describer(graph,base = "http://organizacao.com")
+        d.value(RDFS.comment,presentation, lang=lang)
         
     graph.bind('aof',AOF)
     graph.bind('ao',AO)
     graph.bind('pav',PAV)
-    lang = 'pt'
 
     while len(search_remaining_concepts) > 0:
         biggest_concept_lenght = len(max(search_remaining_concepts,key = len))
@@ -126,7 +127,7 @@ def gen_article_annotations(text,concept_dict,base,author,description):
                             if [i.upper() for i in concept] == [i.upper() for i in sentence[-(k + biggest_concept_lenght):-k]]:
                                 concepts_found.insert(len(concepts_found),concept)
                                 d.rel(RDF.type,AO.Annotation)
-                                d.rel(AOF.annotatesDocument,url)
+                                d.rel(AOF.annotatesDocument,doc_ref)
                                 d.rel(AO.hasTopic,concept_dict[' '.join(concept)].uri)
                                 d.rel(PAV.createdOn,Literal(datetime.datetime.now(),datatype=XSD.date))
                                 d.rel(PAV.createdB,author)
@@ -144,6 +145,6 @@ for i in web_concepts:
     text_concept = str(i.uri).partition('#')[-1].replace('_',' ')
     concept_dict[text_concept] = i
 
-serialize(gen_article_annotations(text,concept_dict,"www.semanticdev.com","Vitor Silva","Anotação semântica para textos jornalísticos"),format='xml', destination = 'base.rdf')
+serialize(gen_article_annotations("base.rdf",url,text,concept_dict,"www.semanticdev.com","Vitor Silva","Anotação semântica para textos jornalísticos"),format='xml', destination = 'base.rdf')
 
 
